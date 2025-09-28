@@ -6,7 +6,7 @@ role_name VARCHAR(50) NOT NULL UNIQUE);
 
 CREATE TABLE IF NOT EXISTS users (
 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(50) NOT NULL,
+user_name VARCHAR(50) NOT NULL,
 password VARCHAR(50) NOT NULL,
 email VARCHAR (100) NOT NULL UNIQUE,
 role_id INT UNSIGNED NOT NULL,
@@ -33,21 +33,22 @@ user_id INT UNSIGNED NOT NULL,
 room_id INT UNSIGNED NOT NULL,
 start_date DATE NOT NULL,
 end_date DATE NOT NULL,
-guests_count SMALLINT UNSIGNED NOT NULL,
+guest_count INT UNSIGNED NOT NULL,
 status ENUM ('ACTIVE','CANCELED','COMPLETED') NOT NULL DEFAULT 'ACTIVE',
 CONSTRAINT fk_rb_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 CONSTRAINT fk_rb_room FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE RESTRICT,
 CONSTRAINT chk_rb_dates CHECK (end_date >= start_date),
-CONSTRAINT chk_rb_guests CHECK (guests_count > 0)
+CONSTRAINT chk_rb_guests CHECK (guest_count > 0)
 );
 
 CREATE TABLE booking_food (
+id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 booking_id INT UNSIGNED NOT NULL,
 menu_item_id INT UNSIGNED NOT NULL,
 qty INT UNSIGNED NOT NULL,
 price_sek_at_booking DECIMAL(10,2) NOT NULL,
-PRIMARY KEY (booking_id, menu_item_id),
 CONSTRAINT fk_bi_booking FOREIGN KEY (booking_id) REFERENCES room_bookings(id) ON DELETE CASCADE,
 CONSTRAINT fk_bi_menu FOREIGN KEY (menu_item_id) REFERENCES menu(id) ON DELETE RESTRICT,
-CONSTRAINT chk_bi_qty CHECK (qty > 0)
+CONSTRAINT chk_bi_qty CHECK (qty > 0),
+UNIQUE KEY uq_booking_menu (booking_id, menu_item_id)
 );

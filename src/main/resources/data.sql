@@ -1,6 +1,6 @@
 INSERT INTO menu (name_of_dish, price_per_plate) VALUES
 ('Tempura Rolls', 130.00),
-('Salmon olls', 145.00),
+('Salmon Rolls', 145.00),
 ('California Rolls', 155.00),
 ('Miso Soup', 120.00);
 
@@ -15,9 +15,9 @@ INSERT INTO role (role_name) VALUES
 ('ADMIN'),
 ('USER');
 
-INSERT INTO users (name, password, email ,role_id) VALUES
-('Hugo','hugo', 'Hugo@Ransvi.se',(SELECT id FROM roles WHERE role_name = 'ADMIN')),
-('Jocelyn', 'jocelyn', 'Jocelyn@Campos.se', (SELECT id FROM roles WHERE role_name = 'USER')),
-('Erik','erik','Erik@Edman.se', (SELECT id FROM roles WHERE role_name = 'USER')),
-('Mohamed','mohamed', 'Mohamed@Sharshar.se', (SELECT id FROM roles WHERE role_name = 'USER'));
+INSERT INTO users (user_name, password, email ,role_id) VALUES
+('Hugo','hugo', 'Hugo@Ransvi.se',(SELECT id FROM role WHERE role_name = 'ADMIN')),
+('Jocelyn', 'jocelyn', 'Jocelyn@Campos.se', (SELECT id FROM role WHERE role_name = 'USER')),
+('Erik','erik','Erik@Edman.se', (SELECT id FROM role WHERE role_name = 'USER')),
+('Mohamed','mohamed', 'Mohamed@Sharshar.se', (SELECT id FROM role WHERE role_name = 'USER'));
  
