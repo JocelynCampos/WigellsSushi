@@ -18,11 +18,15 @@ public class Room {
     @Column(name = "room_price", nullable = false, precision = 6, scale = 2)
     private BigDecimal roomPrice;
 
+    @Column(name = "max_guests", nullable = false)
+    private Integer maxGuests;
+
     public Room() {}
 
-    public Room(String roomName, BigDecimal roomPrice) {
+    public Room(String roomName, BigDecimal roomPrice, Integer maxGuests) {
         this.roomName = roomName;
         this.roomPrice = roomPrice;
+        this.maxGuests = maxGuests;
     }
 
     public Integer getId() {
@@ -45,5 +49,11 @@ public class Room {
     }
     public void setRoomPrice(BigDecimal roomPrice) {
         this.roomPrice = roomPrice;
+    }
+    public Integer getMaxGuests() {
+        return maxGuests;
+    }
+    public void setMaxGuests(Integer maxGuests) {
+        this.maxGuests = maxGuests;
     }
 }

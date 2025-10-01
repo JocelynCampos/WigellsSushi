@@ -4,11 +4,11 @@ INSERT INTO menu (name_of_dish, price_per_plate) VALUES
 ('California Rolls', 155.00),
 ('Miso Soup', 120.00);
 
-INSERT INTO room (room_name, room_price) VALUES
-('Sakura', 4000.00),
-('Osaka', 3000.00),
-('Dragon Room', 2000.00),
-('Bamboo Hall', 1000.00);
+INSERT INTO room (room_name, room_price, max_guests) VALUES
+('Sakura', 4000.00, 40),
+('Osaka', 3000.00, 30),
+('Dragon Room', 2000.00,20),
+('Bamboo Hall', 1000.00, 10);
 
 
 INSERT INTO role (role_name) VALUES

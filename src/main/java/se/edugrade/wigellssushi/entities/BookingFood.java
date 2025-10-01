@@ -5,18 +5,19 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "booking_food")
+@Table(name = "booking_food", uniqueConstraints = @UniqueConstraint(name = "uq_booking_menu", columnNames = {"booking_id", "menu_item_id"}))
+
 public class BookingFood {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
     private BookingRoom bookingRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "menu_item_id", nullable = false)
     private Menu menu;
 
