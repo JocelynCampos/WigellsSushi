@@ -32,9 +32,9 @@ public class MenuService {
         if(menuRepository.existsByNameIgnoreCase(menu.getDishName())) {
             throw new IllegalArgumentException("Dish name already exists");
         }
-        Menu savedMenu = menuRepository.save(menu);
-        adminLogger.info("Added new dish: id={}, name={}", savedMenu.getId(), savedMenu.getDishName());
-        return savedMenu;
+        Menu newDish = menuRepository.save(menu);
+        adminLogger.info("Added new dish: id={}, name={}", newDish.getId(), newDish.getDishName());
+        return newDish;
     }
 
     @Transactional
