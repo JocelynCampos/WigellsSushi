@@ -13,7 +13,7 @@ import se.edugrade.wigellssushi.services.RoomService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/wigellsushi")
+@RequestMapping("")
 public class AdminController {
 
 
@@ -28,58 +28,47 @@ public class AdminController {
         this.roomService = roomService;
     }
 
-    //Se över ------------------------------------------------------------
+    //----------------- Bokningar -----------------
     @GetMapping("/listcanceled")
     public ResponseEntity <List<BookingRoom>> listcanceled() {
-
+        return ResponseEntity.ok(bookingService.listCanceled());
     }
 
     @GetMapping("/listupcoming")
     public ResponseEntity <List<BookingRoom>> listupcoming() {
-        return listupcoming();
+        return ResponseEntity.ok(bookingService.listUpcoming());
     }
 
     @GetMapping("/listpast")
     public ResponseEntity <List<BookingRoom>> listpast() {
-        return listpast();
+        return ResponseEntity.ok(bookingService.listPast());
     }
-    //----------------------------------------------------------------------
+
+    //-----------------------Rätter------------------------
 
     @PostMapping("/add-dish")
     public ResponseEntity <Menu> addDish(@RequestBody Menu menu) {
         Menu saved = menuService.addDish(menu);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @DeleteMapping("/remdish/{id}}")
-    public ResponseEntity <Void> remDish(@RequestBody Integer menuId) {
-        menuService.deleteDish(menuId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity <Void> remDish(@PathVariable Integer id) {
+        menuService.deleteDish(id);
+        return ResponseEntity.noContent().build();
     }
+
+    //-----------------------Lokaler------------------------
 
     @PostMapping("/addroom")
     public ResponseEntity <Room> addRoom(@RequestBody Room room) {
         Room saved = roomService.addRoom(room);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    //Se över!!!
     @PutMapping("/updateroom")
-    public ResponseEntity <Room> updateRoom(@RequestBody Room room) {
-        return;
+    public ResponseEntity <Room> updateRoom(@PathVariable Integer id, @RequestBody Room room) {
+        Room updated = roomService.updateRoom(id, room);
+        return ResponseEntity.ok(updated);
     }
-
-/**
-• Lista avbokningar GET /api/wigellsushi/listcanceled
-• Lista kommande bokningar GET /api/wigellsushi/listupcoming
-• Lista historiska bokningar GET /api/wigellsushi/listpast
-• Lista rätter GET /api/wigellsushi/dishes    BORDE INTE FINNAS HÄR OCKSÅ?
-• Lägg till rätt POST /api/wigellsushi/add-dish
-• Radera rätt DELETE /api/wigellsushi/remdish/{id}
-• Lista lokaler GET /api/wigellsushi/rooms   BORDE INTE FINNAS HÄR OCKSÅ?
-• Lägg till lokal POST /api/wigellsushi/addroom
-• Uppdatera lokal PUT /api/wigellsushi/updateroom
- **/
-
-
 }

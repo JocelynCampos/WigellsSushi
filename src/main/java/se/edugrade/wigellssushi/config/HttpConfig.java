@@ -10,10 +10,10 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties(FxProperties.class)
 public class HttpConfig {
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplate(FxProperties fx) {
         var f = new SimpleClientHttpRequestFactory();
-        f.setConnectTimeout(5000);
-        f.setReadTimeout(5000);
+        f.setConnectTimeout(fx.getConnectTimeoutMs());
+        f.setReadTimeout(fx.getReadTimeoutMs());
 
         return new RestTemplate(f);
     }
