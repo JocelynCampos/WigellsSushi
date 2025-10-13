@@ -32,7 +32,7 @@ public class MenuService implements MenuServiceInterface {
     @Transactional
     public Menu addDish(Menu menu) {
         String dishName = menu.getDishName().trim();
-        if(menuRepository.existsByNameIgnoreCase(menu.getDishName())) {
+        if(menuRepository.existsByDishNameIgnoreCase(menu.getDishName())) {
             throw new IllegalArgumentException("Dish name already exists");
         }
         menu.setDishName(dishName);
