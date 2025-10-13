@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import se.edugrade.wigellssushi.entities.Room;
 
 public interface RoomRepository extends JpaRepository<Room, Integer> {
-    boolean existsByNameIgnoreCase(String roomName);
+    boolean existsByRoomNameIgnoreCase(String roomName);
 }

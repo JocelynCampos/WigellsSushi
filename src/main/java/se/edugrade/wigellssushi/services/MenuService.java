@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class MenuService {
+public class MenuService implements MenuServiceInterface {
 
     private final MenuRepository menuRepository;
 
@@ -23,26 +23,38 @@ public class MenuService {
 
     private static final Logger adminLogger = LoggerFactory.getLogger(MenuService.class);
 
-    public List<Menu> getListOfDishes(){
+    @Override
+    public List<Menu> getAllDishes() {
         return menuRepository.findAll();
     }
 
+    @Override
     @Transactional
-    public Menu addNewDish(Menu menu){
+    public Menu addDish(Menu menu) {
+        String dishName = menu.getDishName().trim();
         if(menuRepository.existsByNameIgnoreCase(menu.getDishName())) {
             throw new IllegalArgumentException("Dish name already exists");
         }
+        menu.setDishName(dishName);
         Menu newDish = menuRepository.save(menu);
         adminLogger.info("Added new dish: id={}, name={}", newDish.getId(), newDish.getDishName());
         return newDish;
     }
 
+    @Override
     @Transactional
-    public void removeDish(Integer id){
+    public void deleteDish(Integer id) {
+
         if (!menuRepository.existsById(id)) {
             throw new ResourceNotFoundException("Menu", "id", id);
         }
         menuRepository.deleteById(id);
-        adminLogger.info("Dish with id={} removed.", id);
+        adminLogger.info("Deleted dish id={}", id);
+
     }
+/** ej kravspec. Gör om du har tid över.
+    @Override
+    public Menu updateDish(Menu menu) {
+        return null;
+    }*/
 }

@@ -5,34 +5,35 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "booking_food")
+@Table(name = "booking_food", uniqueConstraints = @UniqueConstraint(name = "uq_booking_menu", columnNames = {"booking_id", "menu_item_id"}))
+
 public class BookingFood {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
     private BookingRoom bookingRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "menu_item_id", nullable = false)
     private Menu menu;
 
     @Column(name = "qty", nullable = false)
     private Integer qty;
 
-    @Column(name = "price_sek_at_booking", nullable = false, precision = 10, scale = 2)
-    private BigDecimal priceAtBooking;
+    @Column(name = "tot_price_sek_at_booking", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totPriceSekAtBooking;
 
     public BookingFood () {}
 
-    public BookingFood(BookingRoom bookingRoom, Menu menu, Integer qty, BigDecimal priceAtBooking) {
+    public BookingFood(BookingRoom bookingRoom, Menu menu, Integer qty, BigDecimal totPriceSekAtBooking) {
         this.bookingRoom = bookingRoom;
         this.menu = menu;
         this.qty = qty;
-        this.priceAtBooking = priceAtBooking;
+        this.totPriceSekAtBooking = totPriceSekAtBooking;
     }
 
     public Integer getId() {
@@ -67,11 +68,11 @@ public class BookingFood {
         this.qty = qty;
     }
 
-    public BigDecimal getPriceAtBooking() {
-        return priceAtBooking;
+    public BigDecimal getTotPriceSekAtBooking() {
+        return totPriceSekAtBooking;
     }
 
-    public void setPriceAtBooking(BigDecimal priceAtBooking) {
-        this.priceAtBooking = priceAtBooking;
+    public void setTotPriceSekAtBooking(BigDecimal priceAtBooking) {
+        this.totPriceSekAtBooking = priceAtBooking;
     }
 }
