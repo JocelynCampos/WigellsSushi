@@ -9,6 +9,8 @@ import se.edugrade.wigellssushi.enums.BookingStatus;
 import se.edugrade.wigellssushi.exceptions.ResourceNotFoundException;
 import se.edugrade.wigellssushi.repositories.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +62,9 @@ public class BookingService implements BookingServiceInterface {
         }
 
         boolean overlap = bookingRoomRepository
-                .existsByRoom_IdStatusAndStartDateLessThanAndEndDateGreaterThan(
+                .existsByRoom_IdAndStatusAndStartDateLessThanAndEndDateGreaterThan(
                         roomId, BookingStatus.ACTIVE, endDate, startDate);
+
         //Om bokning kolliderar med annan existerande bokning
         if (overlap) {
             throw new IllegalArgumentException("Room already booked");
@@ -78,9 +81,7 @@ public class BookingService implements BookingServiceInterface {
         BookingRoom saved = bookingRoomRepository.save(booked);
         adminLogger.info("Booked room: id={}, user={}", saved.getId(), saved.getUser().getId());
 
-        //Beräkna kostnad här? Använd API
-
-        return saved;
+        return saved;  //Beräkna kostnad här? Använd API
     }
 
     @Override
@@ -97,19 +98,25 @@ public class BookingService implements BookingServiceInterface {
             Integer menuId = entry.getKey();
             Integer qty = entry.getValue();
             if (qty == null || qty <= 0) {
-                throw new IllegalArgumentException("Number of guests can't be 0");
+                throw new IllegalArgumentException("Quantity must be above 0.");
             }
 
             Menu menu = menuRepository.findById(menuId)
                     .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", menuId));
-            if (bookingFoodRepository.existsByBookingRoomIdAndMenuId(bookingId, menuId)) {
+
+            if (bookingFoodRepository.existsByBookingRoom_IdAndMenu_Id(bookingId, menuId)) {
                 throw new IllegalArgumentException("Items already added to this booking.");
             }
+            BigDecimal total = menu.getPricePerPlate()
+                    .multiply(BigDecimal.valueOf(qty))
+                    .setScale(2, RoundingMode.HALF_UP);
+
             BookingFood bookingFood = new BookingFood();
             bookingFood.setBookingRoom(booking);
             bookingFood.setMenu(menu);
             bookingFood.setQty(qty);
-            bookingFood.setPriceAtBooking(menu.getPricePerPlate()); //Ändra denna
+            bookingFood.setTotPriceSekAtBooking(total); //Ändra denna?
+
             bookingFoodRepository.save(bookingFood);
 
         }
@@ -125,7 +132,13 @@ public class BookingService implements BookingServiceInterface {
         if (!bookedRoom.getUser().getUserName().equals(username)) {
             throw new IllegalArgumentException("Username not matched.");
         }
-        bookedRoom.setStatus(BookingStatus.CANCELLED);
+
+        LocalDate lastDateToCancel = bookedRoom.getStartDate().minusWeeks(1);
+        if (LocalDate.now().isAfter(lastDateToCancel)) {
+            throw new IllegalArgumentException("Can't cancel this booking due to arrival being less than 7 days from now.");
+        }
+
+        bookedRoom.setStatus(BookingStatus.CANCELED);
         BookingRoom saved = bookingRoomRepository.save(bookedRoom);
         adminLogger.info("Canceled booking room: id={}, user={}", bookingId, username);
         return saved;
@@ -136,19 +149,20 @@ public class BookingService implements BookingServiceInterface {
         return bookingRoomRepository.findByUser_UserNameOrderByStartDateDesc(username);
     }
 
+
     @Override
     public List<BookingRoom> listUpcoming() {
-        return List.of();
+        return bookingRoomRepository.findByStatusAndStartDateGreaterThanEqualOrderByStartDateAsc(BookingStatus.ACTIVE, LocalDate.now());
     }
 
     @Override
     public List<BookingRoom> listPast() {
-        return List.of();
+        return bookingRoomRepository.findByEndDateBeforeOrderByStartDateDesc(LocalDate.now());
     }
 
     @Override
     @Transactional
     public List<BookingRoom> listCanceled() {
-        return List.of();
+        return bookingRoomRepository.findByStatusOrderByStartDateDesc(BookingStatus.CANCELED);
     }
 }

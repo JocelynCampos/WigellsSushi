@@ -14,6 +14,7 @@ public interface BookingServiceInterface {
     BookingRoom cancel(Integer bookingId, String username);
     List<BookingRoom> getMyBookings(String username);
 
+
     //Admin
     List<BookingRoom> listUpcoming();
     List<BookingRoom> listPast();

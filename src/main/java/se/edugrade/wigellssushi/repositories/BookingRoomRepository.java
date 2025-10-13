@@ -9,17 +9,14 @@ import java.util.List;
 
 public interface BookingRoomRepository extends JpaRepository<BookingRoom, Integer> {
 
-    boolean existsByBookingId(int bookingId);
-
-    boolean existsByRoom_IdStatusAndStartDateLessThanAndEndDateGreaterThan
+    boolean existsByRoom_IdAndStatusAndStartDateLessThanAndEndDateGreaterThan
             (Integer roomId, BookingStatus status, LocalDate endDate, LocalDate startDate);
 
-    //User: mina bokningar
+    //User
     List<BookingRoom>findByUser_UserNameOrderByStartDateDesc(String userName);
+    //List<BookingRoom> findByUser_IdOrderByStartDateDesc(Integer userId); Ta bort?
 
-    List<BookingRoom> findByUser_IdOrderByStartDateDesc(Integer userId);
-
-    //ADmin
+    //Admin
     List<BookingRoom>findByStatusAndStartDateGreaterThanEqualOrderByStartDateAsc(BookingStatus status, LocalDate fromDate);
     List<BookingRoom> findByEndDateBeforeOrderByStartDateDesc(LocalDate untilDate);
     List<BookingRoom> findByStatusOrderByStartDateDesc(BookingStatus status);
