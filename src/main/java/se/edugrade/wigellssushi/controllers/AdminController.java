@@ -66,7 +66,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @PutMapping("/updateroom")
+    @PutMapping("/updateroom/{id}")
     public ResponseEntity <Room> updateRoom(@PathVariable Integer id, @RequestBody Room room) {
         Room updated = roomService.updateRoom(id, room);
         return ResponseEntity.ok(updated);
