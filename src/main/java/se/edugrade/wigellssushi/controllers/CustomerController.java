@@ -27,11 +27,11 @@ public class CustomerController {
 
     // -------------------- Lokaler
     @PostMapping("/bookroom")
-    public ResponseEntity <BookingRoom> bookRoom(@RequestParam Integer roomId,
-                                                 @RequestParam Integer userId,
-                                                 @RequestParam @DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
-                                                 @RequestParam @DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate endDate,
-                                                 @RequestParam Integer guests) {
+    public ResponseEntity <BookingRoom> bookRoom(@RequestParam ("roomId") Integer roomId,
+                                                 @RequestParam ("userId") Integer userId,
+                                                 @RequestParam ("startDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
+                                                 @RequestParam ("endDate")@DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate endDate,
+                                                 @RequestParam ("guests") Integer guests) {
         BookingRoom booking = bookingService.bookRoom(roomId, userId, startDate, endDate, guests);
         return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
