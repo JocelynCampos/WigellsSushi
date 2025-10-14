@@ -17,6 +17,7 @@ public class SecurityConfig {
         http
                 .csrf( csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/wigellsushi/test").permitAll()
 
                         .requestMatchers("/api/wigellsushi/rooms",
                                 "/api/wigellsushi/dishes",
@@ -31,7 +32,7 @@ public class SecurityConfig {
                                 "/api/wigellsushi/add-dish",
                                 "/api/wigellsushi/remdish/**",
                                 "/api/wigellsushi/addroom",
-                                "/api/wigellsushi/updateroom")
+                                "/api/wigellsushi/updateroom/**")
                         .hasRole("ADMIN")
                 )
                 .httpBasic(Customizer.withDefaults());

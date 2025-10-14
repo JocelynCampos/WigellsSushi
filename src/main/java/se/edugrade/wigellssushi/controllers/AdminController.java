@@ -52,7 +52,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @DeleteMapping("/remdish/{id}}")
+    @DeleteMapping("/remdish/{id}")
     public ResponseEntity <Void> remDish(@PathVariable Integer id) {
         menuService.deleteDish(id);
         return ResponseEntity.noContent().build();
