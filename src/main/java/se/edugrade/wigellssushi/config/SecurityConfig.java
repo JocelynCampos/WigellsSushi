@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 "/api/wigellsushi/addroom",
                                 "/api/wigellsushi/updateroom/**")
                         .hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
