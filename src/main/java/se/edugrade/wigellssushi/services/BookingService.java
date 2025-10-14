@@ -145,6 +145,7 @@ public class BookingService implements BookingServiceInterface {
     }
 
     @Override
+    @Transactional
     public List<BookingRoom> getMyBookings(String username) {
         return bookingRoomRepository.findByUser_UserNameOrderByStartDateDesc(username);
     }
