@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/api/wigellsushi")
 public class CustomerController {
 
     private final BookingService bookingService;
