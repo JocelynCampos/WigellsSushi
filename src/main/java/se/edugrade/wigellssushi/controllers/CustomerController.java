@@ -4,9 +4,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import se.edugrade.wigellssushi.dto.OrderFoodRequest;
 import se.edugrade.wigellssushi.entities.*;
 import se.edugrade.wigellssushi.enums.BookingStatus;
+import se.edugrade.wigellssushi.repositories.RoomRepository;
+import se.edugrade.wigellssushi.repositories.UserRepository;
 import se.edugrade.wigellssushi.services.BookingService;
 
 
@@ -18,11 +21,14 @@ import java.util.List;
 public class CustomerController {
 
     private final BookingService bookingService;
+    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
 
-    public CustomerController(BookingService bookingService) {
+    public CustomerController(BookingService bookingService, RoomRepository roomRepository, UserRepository userRepository) {
         this.bookingService = bookingService;
-
+        this.roomRepository = roomRepository;
+        this.userRepository = userRepository;
     }
 
     // -------------------- Lokaler
@@ -32,6 +38,15 @@ public class CustomerController {
                                                  @RequestParam ("startDate") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
                                                  @RequestParam ("endDate")@DateTimeFormat (iso = DateTimeFormat.ISO.DATE)LocalDate endDate,
                                                  @RequestParam ("guests") Integer guests) {
+        var room = roomRepository.findById(roomId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found."));
+        var user = userRepository.findById(userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        if (startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date must be <= endDate");
+        }
+        if (guests == null || guests <=0 || guests > room.getMaxGuests()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Guests must be between 1 and " + room.getMaxGuests() + " for chosen room.");
+        }
+
         BookingRoom booking = bookingService.bookRoom(roomId, userId, startDate, endDate, guests);
         return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
