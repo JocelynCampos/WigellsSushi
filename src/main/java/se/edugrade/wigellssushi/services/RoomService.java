@@ -2,8 +2,10 @@ package se.edugrade.wigellssushi.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import se.edugrade.wigellssushi.entities.Room;
 import se.edugrade.wigellssushi.exceptions.ResourceNotFoundException;
 import se.edugrade.wigellssushi.repositories.RoomRepository;
@@ -32,10 +34,10 @@ public class RoomService implements RoomServiceInterface {
     public Room addRoom(Room room) {
         String roomName = room.getRoomName() == null ? "" : room.getRoomName().trim();
         if (roomName.isEmpty()) {
-            throw new IllegalArgumentException("Room name cannot be empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room name cannot be empty");
         }
         if(roomRepository.existsByRoomNameIgnoreCase(roomName)) {
-            throw new IllegalArgumentException("Room name already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Room name already exists");
         }
         room.setRoomName(roomName);
         Room newRoom = roomRepository.save(room);
@@ -47,24 +49,24 @@ public class RoomService implements RoomServiceInterface {
     @Transactional
     public Room updateRoom(Integer id, Room patch) {
         Room existingRoom = roomRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Room", "id", id));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found with id" + id));
 
         if(patch.getRoomName() != null) {
             String newName = patch.getRoomName().trim();
 
             if (newName.isEmpty())
-                throw new IllegalArgumentException("Room name cant be blank.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room name cant be blank.");
 
             if (!newName.equalsIgnoreCase(existingRoom.getRoomName())
                     && roomRepository.existsByRoomNameIgnoreCase(newName)) {
-                throw new IllegalArgumentException("Room name already exists");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Room name already exists");
             }
             existingRoom.setRoomName(newName);
         }
         if (patch.getMaxGuests() != null) {
             Integer newMaxGuests = patch.getMaxGuests();
             if (patch.getMaxGuests() <= 0) {
-                throw new IllegalArgumentException("Max guests can't be less than 0");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Max guests must be greater than 0");
             }
             existingRoom.setMaxGuests(newMaxGuests);
         }

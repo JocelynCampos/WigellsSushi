@@ -47,20 +47,20 @@ public class BookingService implements BookingServiceInterface {
     @Override
     public BookingRoom bookRoom(Integer roomId, Integer userId, LocalDate startDate, LocalDate endDate, Integer guests) {
         if (startDate == null || endDate == null || !endDate.isAfter(startDate)) {
-            throw new IllegalArgumentException("Invalid start or end date");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid start or end date");
         }
-        if (guests == null || guests < 0) {
-            throw new IllegalArgumentException("Invalid amount of guests.");
+        if (guests == null || guests <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid amount of guests.");
         }
 
         Users user = userRepository.findById(userId)
-                .orElseThrow(()-> new ResourceNotFoundException("Users", "id", userId));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(()-> new ResourceNotFoundException("Room", "id", roomId));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Room id not found" + roomId));
 
         //rum Kapacitet
         if (room.getMaxGuests() != null && guests > room.getMaxGuests()) {
-            throw new IllegalArgumentException("Amounts of guests exceeds room capacity");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Amounts of guests exceeds room capacity");
         }
 
         boolean overlap = bookingRoomRepository
@@ -69,7 +69,7 @@ public class BookingService implements BookingServiceInterface {
 
         //Om bokning kolliderar med annan existerande bokning
         if (overlap) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room already booked");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Room already booked");
         }
 
         BookingRoom booked = new BookingRoom();
@@ -90,24 +90,24 @@ public class BookingService implements BookingServiceInterface {
     @Transactional
     public BookingRoom orderFood(Integer bookingId, Map<Integer, Integer> items, String username) {
         if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("No items provided");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No items provided");
         }
 
         BookingRoom booking = bookingRoomRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("BookingRoom", "id", bookingId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found"));
 
         for (Map.Entry<Integer, Integer> entry : items.entrySet()) {
             Integer menuId = entry.getKey();
             Integer qty = entry.getValue();
             if (qty == null || qty <= 0) {
-                throw new IllegalArgumentException("Quantity must be above 0.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Quantity must be above 0.");
             }
 
             Menu menu = menuRepository.findById(menuId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", menuId));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu not found:" + menuId));
 
             if (bookingFoodRepository.existsByBookingRoom_IdAndMenu_Id(bookingId, menuId)) {
-                throw new IllegalArgumentException("Items already added to this booking.");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Items already added to this booking.");
             }
             BigDecimal total = menu.getPricePerPlate()
                     .multiply(BigDecimal.valueOf(qty))
@@ -130,14 +130,14 @@ public class BookingService implements BookingServiceInterface {
     @Transactional
     public BookingRoom cancel(Integer bookingId, String username) {
         BookingRoom bookedRoom = bookingRoomRepository.findById(bookingId)
-                .orElseThrow(()-> new ResourceNotFoundException("BookingRoom", "id", bookingId));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found:" + bookingId));
         if (!bookedRoom.getUser().getUserName().equals(username)) {
-            throw new IllegalArgumentException("Username not matched.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Username not matched.");
         }
 
         LocalDate lastDateToCancel = bookedRoom.getStartDate().minusWeeks(1);
         if (LocalDate.now().isAfter(lastDateToCancel)) {
-            throw new IllegalArgumentException("Can't cancel this booking due to arrival being less than 7 days from now.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Can't cancel this booking due to arrival being less than 7 days from now.");
         }
 
         bookedRoom.setStatus(BookingStatus.CANCELED);

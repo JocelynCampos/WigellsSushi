@@ -3,8 +3,10 @@ package se.edugrade.wigellssushi.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import se.edugrade.wigellssushi.entities.Menu;
 import se.edugrade.wigellssushi.exceptions.ResourceNotFoundException;
 import se.edugrade.wigellssushi.repositories.MenuRepository;
@@ -33,7 +35,7 @@ public class MenuService implements MenuServiceInterface {
     public Menu addDish(Menu menu) {
         String dishName = menu.getDishName().trim();
         if(menuRepository.existsByDishNameIgnoreCase(menu.getDishName())) {
-            throw new IllegalArgumentException("Dish name already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Dish name already exists");
         }
         menu.setDishName(dishName);
         Menu newDish = menuRepository.save(menu);
