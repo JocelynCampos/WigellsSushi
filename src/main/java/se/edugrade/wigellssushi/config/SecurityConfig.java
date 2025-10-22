@@ -25,7 +25,8 @@ public class SecurityConfig {
                                 "/api/wigellsushi/bookroom",
                                 "/api/wigellsushi/orderfood",
                                 "/api/wigellsushi/cancelbooking",
-                                "/api/wigellsushi/mybookings").hasAnyRole("ADMIN", "USER")
+                                "/api/wigellsushi/mybookings",
+                                "api/wigellsushi/totalcost").hasAnyRole("ADMIN", "USER")
 
                         .requestMatchers("/api/wigellsushi/listcanceled",
                                 "/api/wigellsushi/listupcoming",

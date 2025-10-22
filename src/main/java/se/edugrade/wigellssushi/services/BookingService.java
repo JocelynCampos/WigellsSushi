@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import se.edugrade.wigellssushi.dto.TotalCost;
 import se.edugrade.wigellssushi.entities.*;
 import se.edugrade.wigellssushi.enums.BookingStatus;
 import se.edugrade.wigellssushi.exceptions.ResourceNotFoundException;
@@ -16,6 +17,8 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,17 +32,19 @@ public class BookingService implements BookingServiceInterface {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final MenuRepository menuRepository;
+    private final CurrencyService currencyService;
 
     public BookingService(BookingRoomRepository bookingRoomRepository,
                           BookingFoodRepository bookingFoodRepository,
                           UserRepository userRepository,
                           RoomRepository roomRepository,
-                          MenuRepository menuRepository) {
+                          MenuRepository menuRepository, CurrencyService currencyService) {
         this.bookingRoomRepository = bookingRoomRepository;
         this.bookingFoodRepository = bookingFoodRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.menuRepository = menuRepository;
+        this.currencyService = currencyService;
     }
 
 
@@ -83,7 +88,7 @@ public class BookingService implements BookingServiceInterface {
         BookingRoom saved = bookingRoomRepository.save(booked);
         adminLogger.info("Booked room: id={}, user={}", saved.getId(), saved.getUser().getId());
 
-        return saved;  //Beräkna kostnad här? Använd API
+        return saved;
     }
 
     @Override
@@ -167,5 +172,52 @@ public class BookingService implements BookingServiceInterface {
     @Transactional
     public List<BookingRoom> listCanceled() {
         return bookingRoomRepository.findByStatusOrderByStartDateDesc(BookingStatus.CANCELED);
+    }
+
+    public TotalCost getTotalCost(Integer bookingId, String currency) {
+        BookingRoom booking = bookingRoomRepository.findById(bookingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find booking."));
+
+        long days = DAYS.between(booking.getStartDate(), booking.getEndDate()) + 1;
+        if (days <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date must be same or after start date.");
+        }
+
+        //Tot rum kostnad
+        BigDecimal roomCostSek = booking.getRoom()
+                .getRoomPrice()
+                .multiply(BigDecimal.valueOf(days));
+
+        //Tot mat kostnad
+        BigDecimal foodCostSek = bookingFoodRepository
+                .findByBookingRoom_Id(bookingId)
+                .stream()
+                .map(BookingFood::getTotPriceSekAtBooking)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        //Totalt för allt i sek
+        BigDecimal totSek = roomCostSek.add(foodCostSek).setScale(2, RoundingMode.HALF_UP);
+
+
+        String targetCurrency = (currency == null || currency.isBlank())
+                ? "SEK" : currency.trim().toUpperCase();
+
+        BigDecimal totalInTarget;
+        switch (targetCurrency) {
+            case "SEK" -> totalInTarget = totSek;
+            case "EUR" -> {
+                float sekPerEur = currencyService.getSEKtoEUR();
+                totalInTarget = totSek.divide(BigDecimal.valueOf(sekPerEur), 2, RoundingMode.HALF_UP);
+            }
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Currency not supported." + targetCurrency);
+        }
+
+        return new TotalCost(
+                roomCostSek.setScale(2,RoundingMode.HALF_UP),
+                foodCostSek.setScale(2,RoundingMode.HALF_UP),
+                targetCurrency,
+                totSek,
+                totalInTarget
+        );
     }
 }
