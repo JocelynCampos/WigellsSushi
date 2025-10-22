@@ -122,7 +122,7 @@ public class BookingService implements BookingServiceInterface {
             bookingFood.setBookingRoom(booking);
             bookingFood.setMenu(menu);
             bookingFood.setQty(qty);
-            bookingFood.setTotPriceSekAtBooking(total); //Ändra denna?
+            //bookingFood.setTotPriceSekAtBooking(total);
 
             bookingFoodRepository.save(bookingFood);
 
