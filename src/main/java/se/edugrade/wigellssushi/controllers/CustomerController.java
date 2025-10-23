@@ -43,9 +43,6 @@ public class CustomerController {
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start date must be <= endDate");
         }
-        /*if (guests == null || guests <=0 || guests > room.getMaxGuests()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Guests must be between 1 and " + room.getMaxGuests() + " for chosen room.");
-        }**/
 
         BookingRoom booking = bookingService.bookRoom(roomId, userId, startDate, endDate, guests);
         return ResponseEntity.status(HttpStatus.CREATED).body(booking);
