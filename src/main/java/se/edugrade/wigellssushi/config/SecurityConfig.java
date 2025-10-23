@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
                 .csrf( csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/wigellsushi/test",
+                        .requestMatchers("/test",
                                 "/api/wigellsushi/euro-to-sek").permitAll()
 
                         .requestMatchers("/api/wigellsushi/rooms",
