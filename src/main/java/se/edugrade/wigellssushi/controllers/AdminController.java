@@ -13,7 +13,7 @@ import se.edugrade.wigellssushi.services.RoomService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wigellsushi")
+@RequestMapping("")
 public class AdminController {
 
 

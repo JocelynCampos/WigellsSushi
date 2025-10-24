@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wigellsushi")
+@RequestMapping("")
 public class CustomerController {
 
     private final BookingService bookingService;

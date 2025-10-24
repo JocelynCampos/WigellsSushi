@@ -9,7 +9,7 @@ import se.edugrade.wigellssushi.services.BookingService;
 import se.edugrade.wigellssushi.services.CurrencyService;
 
 @RestController
-@RequestMapping("/api/wigellsushi")
+@RequestMapping("")
 public class CurrencyExchangeController {
 
     private final CurrencyService currencyService;

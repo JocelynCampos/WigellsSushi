@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/wigellsushi")
+@RequestMapping("")
 public class CommonController {
 
     private final MenuService menuService;
