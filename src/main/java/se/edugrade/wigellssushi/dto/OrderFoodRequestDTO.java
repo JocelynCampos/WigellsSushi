@@ -2,7 +2,7 @@ package se.edugrade.wigellssushi.dto;
 
 import java.util.Map;
 
-public class OrderFoodRequest {
+public class OrderFoodRequestDTO {
     private Integer bookingId;
     private String username;
     private Map<Integer, Integer> items;

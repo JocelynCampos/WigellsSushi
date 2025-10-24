@@ -6,10 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import se.edugrade.wigellssushi.dto.TotalCost;
+import se.edugrade.wigellssushi.dto.TotalCostDTO;
 import se.edugrade.wigellssushi.entities.*;
 import se.edugrade.wigellssushi.enums.BookingStatus;
-import se.edugrade.wigellssushi.exceptions.ResourceNotFoundException;
 import se.edugrade.wigellssushi.repositories.*;
 
 import java.math.BigDecimal;
@@ -174,7 +173,7 @@ public class BookingService implements BookingServiceInterface {
         return bookingRoomRepository.findByStatusOrderByStartDateDesc(BookingStatus.CANCELED);
     }
 
-    public TotalCost getTotalCost(Integer bookingId, String currency) {
+    public TotalCostDTO getTotalCost(Integer bookingId, String currency) {
         BookingRoom booking = bookingRoomRepository.findById(bookingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find booking."));
 
@@ -212,7 +211,7 @@ public class BookingService implements BookingServiceInterface {
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Currency not supported." + targetCurrency);
         }
 
-        return new TotalCost(
+        return new TotalCostDTO(
                 roomCostSek.setScale(2,RoundingMode.HALF_UP),
                 foodCostSek.setScale(2,RoundingMode.HALF_UP),
                 targetCurrency,

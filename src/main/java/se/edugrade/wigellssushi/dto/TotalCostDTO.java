@@ -2,7 +2,7 @@ package se.edugrade.wigellssushi.dto;
 
 import java.math.BigDecimal;
 
-public class TotalCost {
+public class TotalCostDTO {
 
     BigDecimal roomCostSek;
     BigDecimal foodCostSek;
@@ -10,7 +10,7 @@ public class TotalCost {
     BigDecimal totalCostFoodAndRoom;
     BigDecimal totalInCurrency;
 
-    public TotalCost(BigDecimal roomCostSek, BigDecimal foodCostSek, String currency, BigDecimal totalCostFoodAndRoom, BigDecimal totalInCurrency) {
+    public TotalCostDTO(BigDecimal roomCostSek, BigDecimal foodCostSek, String currency, BigDecimal totalCostFoodAndRoom, BigDecimal totalInCurrency) {
         this.roomCostSek = roomCostSek;
         this.foodCostSek = foodCostSek;
         this.currency = currency;

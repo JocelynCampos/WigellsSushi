@@ -2,7 +2,7 @@ package se.edugrade.wigellssushi.dto;
 
 import java.util.Map;
 
-public class ExchangeAPIResponse {
+public class ExchangeAPIResponseDTO {
     public boolean success;
     public Map<String, Float> rates;
 

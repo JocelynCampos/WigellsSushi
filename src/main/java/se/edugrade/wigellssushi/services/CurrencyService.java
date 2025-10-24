@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
-import se.edugrade.wigellssushi.dto.ExchangeAPIResponse;
+import se.edugrade.wigellssushi.dto.ExchangeAPIResponseDTO;
 
 @Service
 public class CurrencyService {
@@ -27,14 +27,14 @@ public class CurrencyService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Missing or invalid api key");
         }
 
-        ExchangeAPIResponse response = restClient.get()
+        ExchangeAPIResponseDTO response = restClient.get()
                 .uri(uri-> uri.path("/latest")
                         .queryParam("access_key", apiKey)
                         .queryParam("base", "EUR")
                         .queryParam("symbols", "SEK")
                         .build())
                 .retrieve()
-                .body(ExchangeAPIResponse.class);
+                .body(ExchangeAPIResponseDTO.class);
         if (response.rates != null && response.success != false && response.rates != null && response.rates.containsKey("SEK")) {
             return response.rates.get("SEK");
         }

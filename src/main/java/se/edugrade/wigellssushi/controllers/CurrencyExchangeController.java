@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import se.edugrade.wigellssushi.dto.TotalCost;
+import se.edugrade.wigellssushi.dto.TotalCostDTO;
 import se.edugrade.wigellssushi.services.BookingService;
 import se.edugrade.wigellssushi.services.CurrencyService;
 
@@ -26,8 +26,8 @@ public class CurrencyExchangeController {
     }
 
     @GetMapping("/totalcost")
-    public TotalCost totalCost(@RequestParam Integer bookingId,
-                               @RequestParam(required = false) String currency) {
+    public TotalCostDTO totalCost(@RequestParam Integer bookingId,
+                                  @RequestParam(required = false) String currency) {
         return bookingService.getTotalCost(bookingId, currency);
     }
 }
