@@ -18,23 +18,23 @@ public class SecurityConfig {
                 .csrf( csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test",
-                                "/api/wigellsushi/euro-to-sek").permitAll()
+                                "/euro-to-sek").permitAll()
 
-                        .requestMatchers("/api/wigellsushi/rooms",
-                                "/api/wigellsushi/dishes",
-                                "/api/wigellsushi/bookroom",
-                                "/api/wigellsushi/orderfood",
-                                "/api/wigellsushi/cancelbooking",
-                                "/api/wigellsushi/mybookings",
-                                "api/wigellsushi/totalcost").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/rooms",
+                                "/dishes",
+                                "/bookroom",
+                                "/orderfood",
+                                "/cancelbooking",
+                                "/mybookings",
+                                "/totalcost").hasAnyRole("ADMIN", "USER")
 
-                        .requestMatchers("/api/wigellsushi/listcanceled",
-                                "/api/wigellsushi/listupcoming",
-                                "/api/wigellsushi/listpast",
-                                "/api/wigellsushi/add-dish",
-                                "/api/wigellsushi/remdish/**",
-                                "/api/wigellsushi/addroom",
-                                "/api/wigellsushi/updateroom/**")
+                        .requestMatchers("/listcanceled",
+                                "/listupcoming",
+                                "/listpast",
+                                "/add-dish",
+                                "/remdish/**",
+                                "/addroom",
+                                "/updateroom/**")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
