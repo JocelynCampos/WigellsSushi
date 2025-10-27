@@ -3,7 +3,7 @@ package se.edugrade.wigellssushi.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.edugrade.wigellssushi.entities.BookingRoom;
+import se.edugrade.wigellssushi.dto.RoomBookingDTO;
 import se.edugrade.wigellssushi.entities.Menu;
 import se.edugrade.wigellssushi.entities.Room;
 import se.edugrade.wigellssushi.services.BookingService;
@@ -30,18 +30,21 @@ public class AdminController {
 
     //----------------- Bokningar -----------------
     @GetMapping("/listcanceled")
-    public ResponseEntity <List<BookingRoom>> listcanceled() {
-        return ResponseEntity.ok(bookingService.listCanceled());
+    public ResponseEntity <List<RoomBookingDTO>> listcanceled() {
+        var list = bookingService.listCanceled();
+        return ResponseEntity.ok(list.stream().map(RoomBookingDTO::of).toList());
     }
 
     @GetMapping("/listupcoming")
-    public ResponseEntity <List<BookingRoom>> listupcoming() {
-        return ResponseEntity.ok(bookingService.listUpcoming());
+    public ResponseEntity <List<RoomBookingDTO>> listupcoming() {
+        var list = bookingService.listPast();
+        return ResponseEntity.ok(list.stream().map(RoomBookingDTO::of).toList());
     }
 
     @GetMapping("/listpast")
-    public ResponseEntity <List<BookingRoom>> listpast() {
-        return ResponseEntity.ok(bookingService.listPast());
+    public ResponseEntity <List<RoomBookingDTO>> listpast() {
+        var list = bookingService.listPast();
+        return ResponseEntity.ok(list.stream().map(RoomBookingDTO::of).toList());
     }
 
     //-----------------------Rätter------------------------
