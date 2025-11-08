@@ -37,7 +37,7 @@ public class AdminController {
 
     @GetMapping("/listupcoming")
     public ResponseEntity <List<RoomBookingDTO>> listupcoming() {
-        var list = bookingService.listPast();
+        var list = bookingService.listUpcoming();
         return ResponseEntity.ok(list.stream().map(RoomBookingDTO::of).toList());
     }
 
